@@ -14,7 +14,7 @@ import json
 
 import os
 
-CUR_DIR=os.path.abspath(os.path.dirname(__file__))
+CUR_DIR=os.path.abspath(os.path.dirname(__file__)) + "/"
 
 NUM_OF_REQUEST = 0
 NUM_OF_POINT = 30
