@@ -220,7 +220,7 @@ def solve():
 
 def handle(event, context):
     tmp = event['data']
-    if tmp[0]=="-":
+    if type(tmp) != dict and tmp[0]=="-":
         file_content = tmp['file']
         global MISSIONS
         MISSIONS = []
