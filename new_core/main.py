@@ -220,6 +220,9 @@ def solve():
 
 def handle(event, context):
     tmp = event['data']
+    if type(tmp) == bytes:
+        tmp = tmp.decode(("utf-8"))
+        tmp = json.loads(tmp)
     if type(tmp) != dict and tmp[0]=="-":
         file_content = tmp['file']
         global MISSIONS
