@@ -233,7 +233,7 @@ def handle(event, context):
         response_body = json.dumps({"status": message})
         return response_body
     else:
-        input_from_ui = json.loads(tmp)
+        input_from_ui = tmp
         t = input_from_ui["type"]
         if t==0:
             print(input_from_ui)
