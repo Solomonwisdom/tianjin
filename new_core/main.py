@@ -12,6 +12,9 @@ import math
 
 import json
 
+import os
+
+CUR_DIR=os.path.abspath(os.path.dirname(__file__))
 
 NUM_OF_REQUEST = 0
 NUM_OF_POINT = 30
@@ -37,7 +40,7 @@ WEIGHT_LOAD = 0.5
 
 def initialize_point():
     global POINT
-    f = open("data/point.txt")
+    f = open(CUR_DIR+"data/point.txt")
     lines = f.read().splitlines()
     for line in lines:
         temp = line.split(" ")
@@ -47,7 +50,7 @@ def initialize_point():
 def initialize_dist():
     global DIST
     DIST = [[float(0) for i in range(NUM_OF_POINT)] for j in range(NUM_OF_POINT)]
-    f = open("data/route.txt")
+    f = open(CUR_DIR+"data/route.txt")
     lines = f.read().splitlines()
     for line in lines:
         temp = line.split(" ")
