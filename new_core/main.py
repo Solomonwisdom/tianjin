@@ -62,8 +62,6 @@ def load_file():
     initialize_point()
     initialize_dist()
 
-load_file()
-
 def init_center():
     global MISSION_A
     global MISSION_B
@@ -170,7 +168,7 @@ def handle_each_mission(mission):
         cost_time_all, flight_time_all, todo_list_all = sa_phase_all.min_cost(deepcopy(todo_list))
         new_cost[i] = cost_time_all
 
-        print("{} | {}".format(current_cost[i], new_cost[i]))
+        # print("{} | {}".format(current_cost[i], new_cost[i]))
 
         delta_cost[i] = (new_cost[i] - current_cost[i]) + WEIGHT_LOAD * current_cost[i]
         flight_time[i] = flight_time_all
@@ -190,21 +188,18 @@ def handle_each_mission(mission):
 
     for i in range(NUM_OF_FLIGHT):
         CURRENT_COST[i] = generate_cost_current(deepcopy(cost[i]), i)
-    print(MISSION_A)
-    print(MISSION_B)
-    print(TODO_LIST)
-    print(CURRENT_COST)
-    print("\n\n")
+    # print(MISSION_A)
+    # print(MISSION_B)
+    # print(TODO_LIST)
+    # print(CURRENT_COST)
+    # print("\n\n")
 
 def manage():
-    global MISSIONS
     init_center()
     for m in MISSIONS:
         handle_each_mission(deepcopy(m))
-        print(m[0])
 
 def solve():
-    global MISSIONS
     init_center()
     for m in MISSIONS:
         mission_id = m[0]
@@ -219,19 +214,24 @@ def solve():
         CURRENT_COST[i] = generate_cost_current(deepcopy(cost[i]), i)
 
 def handle(event, context):
+    global MISSIONS
+    global NUM_OF_FLIGHT
+    global INTEL
     tmp = event['data']
-    print(tmp)
+    if type(tmp)==bytes: 
+        tmp = json.loads(tmp)
     if type(tmp) != dict:
         return "Error"
     if "mission" in tmp:
         file_content = tmp['mission']
-        global MISSIONS
         MISSIONS = []
         lines = file_content.splitlines()
         for line in lines:
             tmp = line.split()
             MISSIONS.append([int(tmp[0]), int(tmp[1]), int(tmp[2])])
         print(MISSIONS)
+        with open(CUR_DIR + "MISSION.json", "w") as f:
+            f.write(json.dumps(MISSIONS))
         message = "success"
         response_body = json.dumps({"status": message})
         return response_body
@@ -242,12 +242,31 @@ def handle(event, context):
             print(input_from_ui)
             print("Optimization goal: {}".format(input_from_ui['select']))
             print("Intel algo: {}".format(input_from_ui['switch']))
-            global NUM_OF_FLIGHT, INTEL
             NUM_OF_FLIGHT = input_from_ui['slider']
             INTEL = input_from_ui['switch']
+            with open(CUR_DIR + "NUM_OF_FLIGHT.txt", "w") as f:
+                f.write(str(NUM_OF_FLIGHT))
+            with open(CUR_DIR + "INTEL.txt", "w") as f:
+                f.write(str(INTEL))
             response_body = json.dumps({"message": "save success"})
             return response_body
         if t==1:
+            load_file()
+            with open(CUR_DIR + "MISSION.json", "r") as f:
+                content = f.read()
+                MISSIONS = json.loads(content)
+            with open(CUR_DIR + "NUM_OF_FLIGHT.txt", "r") as f:
+                content = f.read()
+                NUM_OF_FLIGHT =  int(content)
+            with open(CUR_DIR + "INTEL.txt", "r") as f:
+                content = f.read()
+                if content == "True":
+                    INTEL = True
+                else:
+                    INTEL = False
+            # print("MISSIONS", MISSIONS)
+            # print("NUM_OF_FLIGHT", NUM_OF_FLIGHT)
+            # print("INTEL", INTEL)
             print("planning...")
             if INTEL:
                 manage()
